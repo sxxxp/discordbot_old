@@ -1,0 +1,7 @@
+discord.py==2.0.0
+asyncio
+youtube_dl==2021.12.17
+requests
+bs4
+pynacl==1.5.0
+pymysql==1.0.2
