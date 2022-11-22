@@ -1,4 +1,4 @@
-import pymysql
+#import pymysql
 import random
 import discord
 import datetime
@@ -28,8 +28,7 @@ ytdl_format_options = {
     # bind to ipv4 since ipv6 addresses cause issues sometimes
     'source_address': '0.0.0.0',
 }
-con = pymysql.connect(host='localhost', port=3306, user='root',
-                      password='0000', database='message', charset='utf8')
+
 ffmpeg_options = {
     'options': '-vn',
 }
@@ -179,15 +178,6 @@ async def search(interaction: Interaction, 닉네임: str):
         await interaction.edit_original_response(content="", embed=embed)
     else:
         await interaction.edit_original_response(content='유저가 없어요.')
-
-
-@tree.command(guild=discord.Object(id=GUILD_ID), name="채팅설정", description='채팅채널을 설정합니다.')
-async def setChannel(interaction: Interaction, 채널: discord.TextChannel):
-    cur = con.cursor()
-    cur.execute("SELECT * FROM guild_channel WHERE guild_id=%s",
-                (str(interaction.guild.id)))
-    cur.execute("INSERT INTO guild_channel VALUES(%s,%s)",
-                (str(interaction.guild.id), str(interaction.channel.id)))
 
 
 @tree.command(guild=discord.Object(id=GUILD_ID), name="quit", description='퇴근시키기')
