@@ -7,10 +7,10 @@ from discord import app_commands, Interaction, ui, ButtonStyle
 import asyncio
 import youtube_dl
 import requests
+import os
 from enum import Enum
 from bs4 import BeautifulSoup
-import re
-import pyshorteners as ps
+
 
 GUILD_ID = '1012635532829921291'
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -444,4 +444,4 @@ async def skipmusic(interaction: Interaction, 갯수: int = 1):
     voice_client.stop()
     await asyncio.sleep(7)
     await interaction.delete_original_response()
-client.run("OTAxNjQyMzQ0MDk5NjE4ODM2.GPkK4E.kbBwoqR9aU4B6FH8BCen3viHolWBUh8FZCLtHg")
+client.run(os.environ['token'])
