@@ -12,7 +12,7 @@ from enum import Enum
 from bs4 import BeautifulSoup
 
 
-GUILD_ID = '1012635532829921291'
+GUILD_ID = '934824600498483220'
 youtube_dl.utils.bug_reports_message = lambda: ''
 ytdl_format_options = {
     'format': 'bestaudio/best',
