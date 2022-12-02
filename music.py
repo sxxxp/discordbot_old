@@ -39,7 +39,6 @@ musicid = 0
 class MyClient(discord.Client):
     async def on_ready(self):
         await self.wait_until_ready()
-        await tree.sync(guild=discord.Object(id=GUILD_ID))
         await client.change_presence(status=discord.Status.online, activity=discord.Game("노래"))
         print(f"{self.user} 에 로그인하였습니다!")
         self.quit_channel.start
@@ -104,7 +103,7 @@ def nextsong(interaction: Interaction, error):
                           after=lambda e: nextsong(interaction, e))
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="길드검색", description='리부트 길드를 검색합니다.')
+@tree.command(name="길드검색", description='리부트 길드를 검색합니다.')
 async def searchGuild(interaction: Interaction, 길드명: str):
     await interaction.response.send_message("길드를 찾고 있어요!")
     url = 'https://maple.gg/guild/reboot/'+길드명
@@ -122,7 +121,7 @@ async def searchGuild(interaction: Interaction, 길드명: str):
         await interaction.edit_original_response(content='길드가 없습니다.')
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="캐릭터검색", description='캐릭터를 검색합니다.')
+@tree.command(name="캐릭터검색", description='캐릭터를 검색합니다.')
 async def search(interaction: Interaction, 닉네임: str):
     await interaction.response.send_message("유저를 찾고 있어요!")
     url = 'https://maple.gg/u/' + 닉네임
@@ -180,7 +179,7 @@ async def search(interaction: Interaction, 닉네임: str):
         await interaction.edit_original_response(content='유저가 없어요.')
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="quit", description='퇴근시키기')
+@tree.command(name="quit", description='퇴근시키기')
 async def musicquit(interaction: Interaction):
     voice_client: discord.VoiceClient = discord.utils.get(
         client.voice_clients, guild=interaction.guild)
@@ -190,7 +189,7 @@ async def musicquit(interaction: Interaction):
     await interaction.delete_original_response()
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="queue", description="노래 리스트")
+@tree.command(name="queue", description="노래 리스트")
 async def queuelist(interaction: Interaction):
     guild = str(interaction.guild.id)
     try:
@@ -244,7 +243,7 @@ async def queuelist(interaction: Interaction):
     await interaction.response.send_message(embed=em(), view=vi())
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="join", description="봇 초대")
+@tree.command(name="join", description="봇 초대")
 async def joinmusic(interaction: Interaction):
     voice_client: discord.VoiceClient = discord.utils.get(
         client.voice_clients, guild=interaction.guild)
@@ -261,7 +260,7 @@ async def joinmusic(interaction: Interaction):
         return await interaction.response.send_message(f"{interaction.user.voice.channel.name}채널 참가함!", ephemeral=True)
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="play", description="노래 시작")
+@tree.command(name="play", description="노래 시작")
 async def playmusic(interaction: Interaction, url_title: str, 먼저틀기: bool = False):
     await interaction.response.send_message("노래를 찾고있어요!!")
     guild = str(interaction.guild.id)
@@ -395,7 +394,7 @@ async def playmusic(interaction: Interaction, url_title: str, 먼저틀기: bool
             return await interaction.delete_original_response()
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="shuffle", description="노래 셔플")
+@tree.command(name="shuffle", description="노래 셔플")
 async def shfflemusic(interaction: Interaction):
     global queue
     guild = str(interaction.guild.id)
@@ -411,7 +410,7 @@ async def shfflemusic(interaction: Interaction):
     await interaction.delete_original_response()
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="indexskip", description="순서 삭제")
+@tree.command(name="indexskip", description="순서 삭제")
 async def indexskipmusic(interaction: Interaction, 시작: int, 끝: int):
     global queue
     guild = str(interaction.guild.id)
@@ -421,7 +420,7 @@ async def indexskipmusic(interaction: Interaction, 시작: int, 끝: int):
     await interaction.delete_original_response()
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="skip", description="노래 스킵")
+@tree.command(name="skip", description="노래 스킵")
 async def skipmusic(interaction: Interaction, 갯수: int = 1):
     global queue
     guild = str(interaction.guild.id)
