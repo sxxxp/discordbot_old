@@ -21,9 +21,9 @@ GUILD_ID = '934824600498483220'
 class MyClient(discord.Client):
     @tasks.loop(hours=1)
     async def reset_connect(self):
-        global con
-        con = pymysql.connect(host=os.environ['host'],port=int(os.environ['port']),user="root",database="guildDatabase",passwd=os.environ['password'],charset='utf8',)
-
+        cur=con.cursor()
+        cur.execute("SELECT * FROM whitelist")
+        cur.close()
     async def on_ready(self):
         await self.wait_until_ready()
         await client.change_presence(status=discord.Status.online, activity=discord.Game("노래"))
