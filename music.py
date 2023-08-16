@@ -197,21 +197,22 @@ class Simulator:
                 return
             self.parent.messo -= self.parent.price()
             value = checkSuccess(self.parent.probabilites())
-            embed = self.parent.embed()
             if value == 0:
                 self.parent.chance = 0
                 self.parent.now += 1
-                embed.add_field(name="성공", value="\u200b")
+                text = "★성공★"
             elif value == -1:
                 if self.parent.now > 15 and self.parent.now != 20:
                     self.parent.now -= 1
                     self.parent.chance += 1
-                embed.add_field(name="실패", value="\u200b")
+                text = "★실패★"
             else:
                 self.parent.chance = 0
                 self.parent.breakNum += 1
                 self.parent.now = 12
-                embed.add_field(name="파괴", value="\u200b")
+                text = "★파괴★"
+            embed = self.parent.embed()
+            embed.add_field(name=text, value="\u200b", inline=False)
             await interaction.response.edit_message(content="", embed=embed, view=self.parent.mainView(self.parent))
 
         @ui.button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
