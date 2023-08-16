@@ -214,12 +214,12 @@ class Simulator:
                 embed.add_field(name="파괴")
             await interaction.response.edit_message(content="", embed=embed, view=self.mainView(self.parent))
 
-        @ui.Button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
+        @ui.button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
         async def preventBreak(self, interaction: Interaction, button: ui.Button):
             self.parent.preventBreak = not self.parent.preventBreak
             await self.parent.setup(interaction)
 
-        @ui.Button(label="스타캐치", emoji="💥", row=2, style=ButtonStyle.primary)
+        @ui.button(label="스타캐치", emoji="💥", row=2, style=ButtonStyle.primary)
         async def preventBreak(self, interaction: Interaction, button: ui.Button):
             self.parent.starCatch = not self.parent.starCatch
             await self.parent.setup(interaction)
