@@ -170,9 +170,9 @@ class Simulator:
         embed.add_field(name=f"{self.now} > {self.now+1} 강화",
                         value="\u200b", inline=False)
         embed.add_field(
-            name="\u200b", value=f"```성공 : {round(percent[0]*100)}%\n실패 : {round((1-percent[0]+percent[1])*100)}\n파괴 : {round(percent[1]*100)}%\n강화 비용 : {money}메소```", inline=False)
+            name="\u200b", value=f"```성공 : {round(percent[0]*100)}%\n실패 : {round((1-percent[0]+percent[1])*100)}\n파괴 : {round(percent[1]*100)}%\n강화 비용 : {int(money)}메소```", inline=False)
         embed.add_field(
-            name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,2)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
+            name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
         embed.add_field(
             name=f"파방 : {'O' if self.preventBreak else 'X'}", value="\u200b", inline=False)
         embed.add_field(
@@ -184,6 +184,7 @@ class Simulator:
         def __init__(self, parent: 'Simulator'):
             super().__init__(timeout=None)
             self.parent = parent
+            self.button()
 
         def button(self):
             go_button = ui.Button(style=ButtonStyle.green, label="강화",
