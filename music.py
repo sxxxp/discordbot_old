@@ -224,7 +224,7 @@ class Simulator:
             embed.add_field(name=text, value="\u200b", inline=False)
             await interaction.response.edit_message(content="", embed=embed, view=self.parent.mainView(self.parent))
 
-        @ui.button(label="끝내기", style=ButtonStyle.red)
+        @ui.button(label="끝내기", row=3, style=ButtonStyle.red)
         async def end(self, interaction: Interaction, button: ui.Button):
             embed = discord.Embed(title="종료")
             embed.add_field(
