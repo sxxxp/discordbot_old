@@ -197,6 +197,7 @@ class Simulator:
             self.parent.messo -= self.parent.price()
             value = checkSuccess(self.parent.probabilites())
             if value == 0:
+                self.parent.chance = 0
                 self.parent.now += 1
             elif value == -1:
                 if self.parent.now > 15 or self.parent.now != 20:
