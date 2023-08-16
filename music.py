@@ -201,17 +201,17 @@ class Simulator:
             if value == 0:
                 self.parent.chance = 0
                 self.parent.now += 1
-                embed.add_field(name="성공")
+                embed.add_field(name="성공", value="\u200b")
             elif value == -1:
                 if self.parent.now > 15 and self.parent.now != 20:
                     self.parent.now -= 1
                     self.parent.chance += 1
-                embed.add_field(name="실패")
+                embed.add_field(name="실패", value="\u200b")
             else:
                 self.parent.chance = 0
                 self.parent.breakNum += 1
                 self.parent.now = 12
-                embed.add_field(name="파괴")
+                embed.add_field(name="파괴", value="\u200b")
             await interaction.response.edit_message(content="", embed=embed, view=self.mainView(self.parent))
 
         @ui.button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
