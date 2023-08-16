@@ -179,7 +179,7 @@ class Simulator:
         embed.add_field(
             name=("★☆찬스타임☆★" if self.chance == 2 else ""), value=f"```성공 : {round(percent[0]*100,2)}%\n실패 : {round((1-(percent[0]+percent[1]))*100,2)}%\n파괴 : {round(percent[1]*100,2)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
         embed.add_field(
-            name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
+            name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n사용 메소 : {round((self.first-self.messo)/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
         embed.add_field(
             name=f"파방 : {'O' if self.preventBreak else 'X'}", value="\u200b", inline=False)
         embed.add_field(
