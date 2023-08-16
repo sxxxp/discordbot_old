@@ -234,7 +234,8 @@ class Simulator:
                 name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n시작 스타포스 : {self.parent.start}성 > {self.parent.now}성\n최고 달성 : {self.parent.best[0]}성 {round((self.parent.first-self.parent.best[1])/100000000,4)}억 사용```", inline=False)
             text = '```'
             prev = self.parent.first
-            for idx, money, current in enumerate(self.parent.log):
+            for idx, data in enumerate(self.parent.log):
+                money, current = data
                 spend = prev - money
                 prev -= spend
                 text += f"{idx+1}번째 파괴 {round(spend/100000000,4)}억 사용 {current}성에서 파괴\n"
