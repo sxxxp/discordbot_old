@@ -226,15 +226,18 @@ class Simulator:
 
         @ui.button(label="끝내기", row=3, style=ButtonStyle.red)
         async def end(self, interaction: Interaction, button: ui.Button):
+            if not interaction.user.id == self.parent.user.id:
+                return
             embed = discord.Embed(title="종료")
             embed.add_field(
-                name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n{self.parent.start}성 > {self.parent.now}\n최고 달성 : {self.parent.best}```", inline=False)
-            text = ''
+                name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n{self.parent.start}성 > {self.parent.now}성\n최고 달성 : {self.parent.best[0]}성 {round(self.parent.first-self.parent.best[1]/100000000,4)}억 사용```", inline=False)
+            text = '```'
             prev = self.parent.first
             for idx, money in enumerate(self.parent.log):
                 spend = prev - money
                 prev -= spend
-                text += f"{idx+1}번째 파괴 **{round(prev/100000000,4)}억** 사용\n"
+                text += f"{idx+1}번째 파괴 {round(prev/100000000,4)}억 사용\n"
+            text += '```'
             if text:
                 embed.add_field(name="파괴기록", value=text)
             await interaction.response.edit_message(content="", embed=embed, view=None)
@@ -243,11 +246,15 @@ class Simulator:
 
         @ui.button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
         async def preventBreak(self, interaction: Interaction, button: ui.Button):
+            if not interaction.user.id == self.parent.user.id:
+                return
             self.parent.preventBreak = not self.parent.preventBreak
             await self.parent.setup(interaction)
 
         @ui.button(label="스타캐치", emoji="💥", row=2, style=ButtonStyle.primary)
         async def starCatch(self, interaction: Interaction, button: ui.Button):
+            if not interaction.user.id == self.parent.user.id:
+                return
             self.parent.starCatch = not self.parent.starCatch
             await self.parent.setup(interaction)
 
