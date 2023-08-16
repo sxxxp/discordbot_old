@@ -220,7 +220,7 @@ class Simulator:
             await self.parent.setup(interaction)
 
         @ui.button(label="스타캐치", emoji="💥", row=2, style=ButtonStyle.primary)
-        async def preventBreak(self, interaction: Interaction, button: ui.Button):
+        async def starCatch(self, interaction: Interaction, button: ui.Button):
             self.parent.starCatch = not self.parent.starCatch
             await self.parent.setup(interaction)
 
