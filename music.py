@@ -47,11 +47,11 @@ class MyClient(discord.Client):
         emoji = "".join(re.compile("[:a-zA-Z]").findall(message.content))
         r = re.sub("[^a-zA-Z]", "", message.content).strip()
         if emoji == f":{r}:":
-            # guild=message.author.guild
+            guild = message.author.guild
             emoji_id = message.content.split(":")[2]
             emoji_id = emoji_id.replace(">", "")
             guild_emoji = discord.Client.get_emoji(self, int(emoji_id))
-            # guild_emoji=discord.utils.get(guild.emojis,id=int(emoji_id))
+            guild_emoji = discord.utils.get(guild.emojis, id=int(emoji_id))
         if guild_emoji:
             def is_user(m: discord.Message):
                 return True if m.author == message.author else False
