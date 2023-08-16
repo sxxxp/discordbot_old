@@ -108,25 +108,26 @@ class Simulator:
     def price(self):
         value = 0
         if self.now <= 9:
-            value = round(1000+(self.level**3)*(self.now+1)/25, -3)
+            value = (1000+(self.level**3)*(self.now+1)/25)
         elif self.now == 10:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/400, -3)
+            value = (1000+(self.level**3)*((self.now+1)**2.7)/400)
         elif self.now == 11:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/220, -3)
+            value = (1000+(self.level**3)*((self.now+1)**2.7)/220)
         elif self.now == 12:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/150, -3)
+            value = (1000+(self.level**3)*((self.now+1)**2.7)/150)
         elif self.now == 13:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/110, -3)
+            value = (1000+(self.level**3)*((self.now+1)**2.7)/110)
         elif self.now == 14:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/75, -3)
+            value = (1000+(self.level**3)*((self.now+1)**2.7)/75)
         elif self.now >= 15:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/200, -3)
+            value = (1000+(self.level**3)*((self.now+1)**2.7)/200)
         if self.siposipuk and self.now == 15:
             pass
-        elif self.preventBreak and self.now == 16 and self.chance:
+        elif self.preventBreak and self.now <= 16 and self.now >= 15 and self.chance:
             value *= 2
         if self.discount:
             value *= 0.7
+        value = round(value, -3)
         return value
 
     def probabilites(self):
