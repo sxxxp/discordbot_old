@@ -1,4 +1,4 @@
-discord.py==2.0.0
+discord.py
 asyncio
 youtube_dl==2021.12.17
 requests
