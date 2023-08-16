@@ -52,15 +52,15 @@ class MyClient(discord.Client):
             emoji_id = emoji_id.replace(">", "")
             guild_emoji = discord.Client.get_emoji(self, int(emoji_id))
             guild_emoji = discord.utils.get(guild.emojis, id=int(emoji_id))
-        if guild_emoji:
-            def is_user(m: discord.Message):
-                return True if m.author == message.author else False
-            embed = discord.Embed(color=message.author.color)
-            embed.set_author(name=message.author.display_name,
-                             icon_url=message.author.avatar)
-            embed.set_image(url=guild_emoji.url)
-            await message.channel.purge(limit=1, check=is_user)
-            await message.channel.send(embed=embed)
+            if guild_emoji:
+                def is_user(m: discord.Message):
+                    return True if m.author == message.author else False
+                embed = discord.Embed(color=message.author.color)
+                embed.set_author(name=message.author.display_name,
+                                 icon_url=message.author.avatar)
+                embed.set_image(url=guild_emoji.url)
+                await message.channel.purge(limit=1, check=is_user)
+                await message.channel.send(embed=embed)
 
 
 intents = discord.Intents.all()
@@ -222,6 +222,7 @@ class Simulator:
 
 @tree.command(guild=discord.Object(id=GUILD_ID), name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
 async def StarForceSimulator(interaction: Interaction, 시작별: int, 메소: int, 이벤트: StarForceEvent, 장비레벨: int):
+    await interaction.response.send_message("준비중입니다.")
     await Simulator(메소, 장비레벨, 시작별, interaction, 이벤트).validity()
 
 
