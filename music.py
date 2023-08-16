@@ -123,7 +123,7 @@ class Simulator:
             value = (1000+(self.level**3)*((self.now+1)**2.7)/200)
         if self.siposipuk and self.now == 15:
             pass
-        elif self.preventBreak and self.now <= 16 and self.now >= 15 and self.chance:
+        elif self.preventBreak and self.now <= 16 and self.now >= 15 and self.chance !=2:
             value *= 2
         if self.discount:
             value *= 0.7
