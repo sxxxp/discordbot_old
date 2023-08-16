@@ -176,7 +176,7 @@ class Simulator:
         embed.add_field(name=f"{self.now} > {self.now+1} 강화",
                         value="\u200b", inline=False)
         embed.add_field(
-            name=("★☆찬스타임☆★" if self.chance == 2 else ""), value=f"```성공 : {round(percent[0]*100,2)}%\n실패 : {round((1-percent[0]+percent[1])*100,2)}%\n파괴 : {round(percent[1]*100,2)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
+            name=("★☆찬스타임☆★" if self.chance == 2 else ""), value=f"```성공 : {round(percent[0]*100,2)}%\n실패 : {round((1-(percent[0]+percent[1]))*100,2)}%\n파괴 : {round(percent[1]*100,2)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
         embed.add_field(
             name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
         embed.add_field(
@@ -236,7 +236,7 @@ class Simulator:
             for idx, money in enumerate(self.parent.log):
                 spend = prev - money
                 prev -= spend
-                text += f"{idx+1}번째 파괴 {round(prev/100000000,4)}억 사용\n"
+                text += f"{idx+1}번째 파괴 {round(spend/100000000,4)}억 사용\n"
             text += '```'
             if text:
                 embed.add_field(name="파괴기록", value=text)
