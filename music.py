@@ -197,18 +197,22 @@ class Simulator:
                 return
             self.parent.messo -= self.parent.price()
             value = checkSuccess(self.parent.probabilites())
+            embed = self.parent.embed()
             if value == 0:
                 self.parent.chance = 0
                 self.parent.now += 1
+                embed.add_field(name="성공")
             elif value == -1:
                 if self.parent.now > 15 and self.parent.now != 20:
                     self.parent.now -= 1
                     self.parent.chance += 1
+                embed.add_field(name="실패")
             else:
                 self.parent.chance = 0
                 self.parent.breakNum += 1
                 self.parent.now = 12
-            await self.parent.setup(interaction)
+                embed.add_field(name="파괴")
+            await interaction.response.edit_message(content="", embed=embed, view=self.mainView(self.parent))
 
         @ui.Button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
         async def preventBreak(self, interaction: Interaction, button: ui.Button):
