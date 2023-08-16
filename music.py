@@ -231,7 +231,7 @@ class Simulator:
                 return
             embed = discord.Embed(title="종료")
             embed.add_field(
-                name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n{self.parent.start}성 > {self.parent.now}성\n최고 달성 : {self.parent.best[0]}성 {round(self.parent.first-self.parent.best[1]/100000000,4)}억 사용```", inline=False)
+                name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n{self.parent.start}성 > {self.parent.now}성\n최고 달성 : {self.parent.best[0]}성 {round((self.parent.first-self.parent.best[1])/100000000,4)}억 사용```", inline=False)
             text = '```'
             prev = self.parent.first
             for idx, money in enumerate(self.parent.log):
