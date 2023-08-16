@@ -211,7 +211,7 @@ class Simulator:
 
     async def setup(self, interaction: Interaction):
         try:
-            await interaction.response.edit_message(embed=self.embed(), view=self.mainView(self))
+            await interaction.response.edit_message(content="", embed=self.embed(), view=self.mainView(self))
         except discord.errors.InteractionResponded:
             await interaction.edit_original_response(embed=self.embed(), view=self.mainView(self))
 
