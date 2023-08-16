@@ -83,7 +83,8 @@ def checkSuccess(probabilities: list | tuple):
 
 
 class Simulator:
-    def __init__(self, messo: int, level: int, now: int, interaction: Interaction, event: StarForceEvent):
+    def __init__(self, messo: float, level: int, now: int, interaction: Interaction, event: StarForceEvent):
+        messo *= 100000000
         self.user = interaction.user
         self.interaction = interaction
         self.messo = messo
