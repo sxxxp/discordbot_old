@@ -41,26 +41,26 @@ class MyClient(discord.Client):
         print(f"{self.user} 에 로그인하였습니다!")
         self.reset_connect.start()
 
-    async def on_message(self, message: discord.Message):
-        if message.author == self.user:
-            return False
-        emoji = "".join(re.compile("[:a-zA-Z]").findall(message.content))
-        r = re.sub("[^a-zA-Z]", "", message.content).strip()
-        if emoji == f":{r}:":
-            guild = message.author.guild
-            emoji_id = message.content.split(":")[2]
-            emoji_id = emoji_id.replace(">", "")
-            guild_emoji = discord.Client.get_emoji(self, int(emoji_id))
-            guild_emoji = discord.utils.get(guild.emojis, id=int(emoji_id))
-            if guild_emoji:
-                def is_user(m: discord.Message):
-                    return True if m.author == message.author else False
-                embed = discord.Embed(color=message.author.color)
-                embed.set_author(name=message.author.display_name,
-                                 icon_url=message.author.avatar)
-                embed.set_image(url=guild_emoji.url)
-                await message.channel.purge(limit=1, check=is_user)
-                await message.channel.send(embed=embed)
+    # async def on_message(self, message: discord.Message):
+    #     if message.author == self.user:
+    #         return False
+    #     emoji = "".join(re.compile("[:a-zA-Z]").findall(message.content))
+    #     r = re.sub("[^a-zA-Z]", "", message.content).strip()
+    #     if emoji == f":{r}:":
+    #         guild = message.author.guild
+    #         emoji_id = message.content.split(":")[2]
+    #         emoji_id = emoji_id.replace(">", "")
+    #         guild_emoji = discord.Client.get_emoji(self, int(emoji_id))
+    #         guild_emoji = discord.utils.get(guild.emojis, id=int(emoji_id))
+    #         if guild_emoji:
+    #             def is_user(m: discord.Message):
+    #                 return True if m.author == message.author else False
+    #             embed = discord.Embed(color=message.author.color)
+    #             embed.set_author(name=message.author.display_name,
+    #                              icon_url=message.author.avatar)
+    #             embed.set_image(url=guild_emoji.url)
+    #             await message.channel.purge(limit=1, check=is_user)
+    #             await message.channel.send(embed=embed)
 
 
 intents = discord.Intents.all()
@@ -170,7 +170,7 @@ class Simulator:
         embed.add_field(name=f"{self.now} > {self.now+1} 강화",
                         value="\u200b", inline=False)
         embed.add_field(
-            name="\u200b", value=f"```성공 : {round(percent[0]*100)}%\n실패 : {round((1-percent[0]+percent[1])*100)}\n파괴 : {round(percent[1]*100)}%\n강화 비용 : {int(money)}메소```", inline=False)
+            name="\u200b", value=f"```성공 : {round(percent[0]*100)}%\n실패 : {round((1-percent[0]+percent[1])*100)}%\n파괴 : {round(percent[1]*100)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
         embed.add_field(
             name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
         embed.add_field(
@@ -201,13 +201,23 @@ class Simulator:
                 self.parent.chance = 0
                 self.parent.now += 1
             elif value == -1:
-                if self.parent.now > 15 or self.parent.now != 20:
+                if self.parent.now > 15 and self.parent.now != 20:
                     self.parent.now -= 1
                     self.parent.chance += 1
             else:
                 self.parent.chance = 0
                 self.parent.breakNum += 1
                 self.parent.now = 12
+            await self.parent.setup(interaction)
+
+        @ui.Button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
+        async def preventBreak(self, interaction: Interaction, button: ui.Button):
+            self.parent.preventBreak = not self.parent.preventBreak
+            await self.parent.setup(interaction)
+
+        @ui.Button(label="스타캐치", emoji="💥", row=2, style=ButtonStyle.primary)
+        async def preventBreak(self, interaction: Interaction, button: ui.Button):
+            self.parent.starCatch = not self.parent.starCatch
             await self.parent.setup(interaction)
 
     async def setup(self, interaction: Interaction):
