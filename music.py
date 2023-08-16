@@ -232,12 +232,12 @@ class Simulator:
 
     async def validity(self):
         self.eventHandler()
+        await self.interaction.response.send_message("준비중입니다.")
         await self.setup(self.interaction)
 
 
 @tree.command(guild=discord.Object(id=GUILD_ID), name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
 async def StarForceSimulator(interaction: Interaction, 시작별: int, 메소: int, 이벤트: StarForceEvent, 장비레벨: int):
-    await interaction.response.send_message("준비중입니다.")
     await Simulator(메소, 장비레벨, 시작별, interaction, 이벤트).validity()
 
 
