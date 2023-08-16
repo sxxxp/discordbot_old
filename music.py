@@ -210,18 +210,22 @@ class Simulator:
                 if self.parent.now > self.parent.best[0]:
                     self.parent.best = [self.parent.now, self.parent.messo]
                 text = "★★★★★★성공★★★★★★"
+                color = 0x20DE07
             elif value == -1:
                 if self.parent.now > 15 and self.parent.now != 20:
                     self.parent.now -= 1
                     self.parent.chance += 1
                 text = "★★★실패★★★"
+                color = 0xBE2E22
             else:
                 self.parent.chance = 0
                 self.parent.breakNum += 1
                 self.parent.log.append([self.parent.messo, self.parent.now])
                 self.parent.now = 12
                 text = "★★★★★파괴★★★★★"
+                color = 0x97BDE0
             embed = self.parent.embed()
+            embed.color = color
             embed.add_field(name=text, value="\u200b", inline=False)
             await interaction.response.edit_message(content="", embed=embed, view=self.parent.mainView(self.parent))
 
