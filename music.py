@@ -166,7 +166,7 @@ class Simulator:
         money = self.price()
         percent = self.probabilites()
         embed = discord.Embed(
-            title=f"{self.user.display_name}님의 스타포스 시뮬레이터", url=self.user.display_avatar)
+            title=f"{self.user.display_name}님의 스타포스 시뮬레이터")
         embed.add_field(name=f"{self.now} > {self.now+1} 강화",
                         value="\u200b", inline=False)
         embed.add_field(
@@ -212,7 +212,7 @@ class Simulator:
                 self.parent.breakNum += 1
                 self.parent.now = 12
                 embed.add_field(name="파괴", value="\u200b")
-            await interaction.response.edit_message(content="", embed=embed, view=self.mainView(self.parent))
+            await interaction.response.edit_message(content="", embed=embed, view=self.parent.mainView(self.parent))
 
         @ui.button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
         async def preventBreak(self, interaction: Interaction, button: ui.Button):
