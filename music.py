@@ -108,19 +108,19 @@ class Simulator:
     def price(self):
         value = 0
         if self.now <= 9:
-            value = round(1000+(self.level**3)*(self.now+1)/25, -2)
+            value = round(1000+(self.level**3)*(self.now+1)/25, -3)
         elif self.now == 10:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/400, -2)
+            value = round(1000+(self.level**3)*((self.now+1)**2.7)/400, -3)
         elif self.now == 11:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/220, -2)
+            value = round(1000+(self.level**3)*((self.now+1)**2.7)/220, -3)
         elif self.now == 12:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/150, -2)
+            value = round(1000+(self.level**3)*((self.now+1)**2.7)/150, -3)
         elif self.now == 13:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/110, -2)
+            value = round(1000+(self.level**3)*((self.now+1)**2.7)/110, -3)
         elif self.now == 14:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/75, -2)
+            value = round(1000+(self.level**3)*((self.now+1)**2.7)/75, -3)
         elif self.now >= 15:
-            value = round(1000+(self.level**3)*((self.now+1)**2.7)/200, -2)
+            value = round(1000+(self.level**3)*((self.now+1)**2.7)/200, -3)
         if self.siposipuk and self.now == 15:
             pass
         elif self.preventBreak and self.now <= 16 and self.chance != 2:
@@ -170,7 +170,7 @@ class Simulator:
         embed.add_field(name=f"{self.now} > {self.now+1} 강화",
                         value="\u200b", inline=False)
         embed.add_field(
-            name="★☆찬스타임☆★" if self.chance == 2 else "", value=f"```성공 : {round(percent[0]*100)}%\n실패 : {round((1-percent[0]+percent[1])*100)}%\n파괴 : {round(percent[1]*100)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
+            name="★☆찬스타임☆★" if self.chance == 2 else "", value=f"```성공 : {percent[0]*100}%\n실패 : {(1-percent[0]+percent[1])*100}%\n파괴 : {percent[1]*100}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
         embed.add_field(
             name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
         embed.add_field(
