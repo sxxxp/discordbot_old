@@ -22,6 +22,7 @@ GUILD_ID = '934824600498483220'
 
 
 class StarForceEvent(Enum):
+    없음 = 0
     십오십육 = 1
     삼십퍼할인 = 2
     샤타포스 = 3
@@ -165,7 +166,6 @@ class Simulator:
                 percent = [1, 0]
         if self.chance == 2:
             percent = [1, 0]
-            self.chance = 0
         return percent
 
     def embed(self):
