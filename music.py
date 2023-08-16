@@ -93,8 +93,13 @@ class Simulator:
         self.siposipuk = False
         self.preventBreak = False
         self.starCatch = False
-        self.breakNum = 0
         self.chance = 0
+
+        self.breakNum = 0
+        self.first = messo
+        self.best = [0, 0]
+        self.log = []
+        self.start = now
 
     def eventHandler(self):
         if self.event.value == 1:
@@ -171,7 +176,7 @@ class Simulator:
         embed.add_field(name=f"{self.now} > {self.now+1} 강화",
                         value="\u200b", inline=False)
         embed.add_field(
-            name="★☆찬스타임☆★" if self.chance == 2 else "", value=f"```성공 : {round(percent[0]*100,2)}%\n실패 : {round((1-percent[0]+percent[1])*100,2)}%\n파괴 : {round(percent[1]*100,2)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
+            name=("★☆찬스타임☆★" if self.chance == 2 else ""), value=f"```성공 : {round(percent[0]*100,2)}%\n실패 : {round((1-percent[0]+percent[1])*100,2)}%\n파괴 : {round(percent[1]*100,2)}%\n강화 비용 : {format(int(money),',')}메소```", inline=False)
         embed.add_field(
             name="\u200b", value=f"```정보:\n아이템 레벨: {self.level}\n보유 메소 : {round(self.messo/100000000,4)}억\n아이템 파괴 개수 : {self.breakNum}개\n적용 중인 이벤트 : {self.event.name}```", inline=False)
         embed.add_field(
@@ -201,6 +206,8 @@ class Simulator:
             if value == 0:
                 self.parent.chance = 0
                 self.parent.now += 1
+                if self.parent.now > self.parent.best[0]:
+                    self.parent.best = [self.parent.now, self.parent.messo]
                 text = "★성공★"
             elif value == -1:
                 if self.parent.now > 15 and self.parent.now != 20:
@@ -211,10 +218,28 @@ class Simulator:
                 self.parent.chance = 0
                 self.parent.breakNum += 1
                 self.parent.now = 12
+                self.parent.log.append(self.parent.messo)
                 text = "★파괴★"
             embed = self.parent.embed()
             embed.add_field(name=text, value="\u200b", inline=False)
             await interaction.response.edit_message(content="", embed=embed, view=self.parent.mainView(self.parent))
+
+        @ui.button(label="끝내기", style=ButtonStyle.red)
+        async def end(self, interaction: Interaction, button: ui.Button):
+            embed = discord.Embed(title="종료")
+            embed.add_field(
+                name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n{self.parent.start}성 > {self.parent.now}\n최고 달성 : {self.parent.best}```", inline=False)
+            text = ''
+            prev = self.parent.first
+            for idx, money in enumerate(self.parent.log):
+                spend = prev - money
+                prev -= spend
+                text += f"{idx+1}번째 파괴 **{round(prev/100000000,4)}억** 사용\n"
+            if text:
+                embed.add_field(name="파괴기록", value=text)
+            await interaction.response.edit_message(content="", embed=embed, view=None)
+            await asyncio.sleep(30)
+            await interaction.delete_original_response()
 
         @ui.button(label="파방", emoji="🔨", row=2, style=ButtonStyle.red)
         async def preventBreak(self, interaction: Interaction, button: ui.Button):
