@@ -67,7 +67,7 @@ class MyClient(discord.Client):
         if img.status_code == 200:
             image_binary = io.BytesIO(img.content)
             image_file = discord.File(image_binary, filename="sunday.jpg")
-        await channel.send(file=image_file)
+        await channel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
 
     async def on_ready(self):
         await self.wait_until_ready()
