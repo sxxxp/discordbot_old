@@ -52,7 +52,10 @@ class MyClient(discord.Client):
                 break
         channel = self.get_channel(1004352123091292272)
         if not sunday_url:
-            return await channel.send("썬데이를 찾지 못했어요...")
+            await channel.send("썬데이를 찾지 못했어요...")
+            await asyncio.sleep(1800)
+            self.sunday_maple.restart()
+            return
         res = requests.get(sunday_url)
         soup = BeautifulSoup(res.text, 'html.parser')
         src = soup.select_one(".new_board_con div div img")['src']
@@ -74,6 +77,7 @@ class MyClient(discord.Client):
         await self.wait_until_ready()
         await client.change_presence(status=discord.Status.online, activity=discord.Game("노래"))
         await tree.sync()
+        await self.sunday_maple.start()
         print(datetime.datetime.now())
         print(f"{self.user} 에 로그인하였습니다!")
         self.reset_connect.start()
