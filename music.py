@@ -275,7 +275,7 @@ class Simulator:
         await self.setup(self.interaction)
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
+@tree.command(name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
 async def StarForceSimulator(interaction: Interaction, 시작별: int, 메소: int, 이벤트: StarForceEvent, 장비레벨: int):
     await Simulator(메소, 장비레벨, 시작별, interaction, 이벤트).validity()
 
@@ -413,7 +413,7 @@ async def searchGuildMate(interaction: Interaction, 길드원명: str):
     await interaction.response.send_message(embed=embed)
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="길드검색", description='리부트 길드를 검색합니다.')
+@tree.command(name="길드검색", description='리부트 길드를 검색합니다.')
 async def searchGuild(interaction: Interaction, 길드명: str):
     await interaction.response.send_message("길드를 찾고 있어요!")
     url = 'https://maple.gg/guild/reboot/'+길드명
@@ -431,7 +431,7 @@ async def searchGuild(interaction: Interaction, 길드명: str):
         await interaction.edit_original_response(content='길드가 없습니다.')
 
 
-@tree.command(guild=discord.Object(id=GUILD_ID), name="캐릭터검색", description='캐릭터를 검색합니다.')
+@tree.command(name="캐릭터검색", description='캐릭터를 검색합니다.')
 async def search(interaction: Interaction, 닉네임: str):
     await interaction.response.send_message("유저를 찾고 있어요!")
     url = 'https://maple.gg/u/' + 닉네임
