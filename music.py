@@ -77,10 +77,10 @@ class MyClient(discord.Client):
         await self.wait_until_ready()
         await client.change_presence(status=discord.Status.online, activity=discord.Game("노래"))
         await tree.sync()
-        await self.sunday_maple.start()
         print(datetime.datetime.now())
         print(f"{self.user} 에 로그인하였습니다!")
         self.reset_connect.start()
+        self.sunday_maple.start()
 
     # async def on_message(self, message: discord.Message):
     #     if message.author == self.user:
