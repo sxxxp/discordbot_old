@@ -42,7 +42,7 @@ class MyClient(discord.Client):
 
     @tasks.loop(time=datetime.time(hour=10, minute=10, tzinfo=KST))
     async def sunday_maple(self):
-        if not datetime.datetime.weekday(datetime.datetime.now()) == 4:
+        if not datetime.datetime.today().weekday() == 4:
             return
         url = 'https://maplestory.nexon.com/News/Event/Ongoing'
         res = requests.get(url)
