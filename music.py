@@ -40,9 +40,10 @@ class MyClient(discord.Client):
         cur.execute("SELECT * FROM whitelist")
         cur.close()
 
-    @tasks.loop(datetime.time(hour=10, minute=10, tzinfo=KST))
+    @tasks.loop(time=datetime.time(hour=10, minute=10, tzinfo=KST))
     async def sunday_maple(self):
-
+        if not datetime.datetime.weekday(datetime.datetime.now()) == 4:
+            return
         url = 'https://maplestory.nexon.com/News/Event/Ongoing'
         res = requests.get(url)
         soup = BeautifulSoup(res.text, 'html.parser')
