@@ -23,6 +23,7 @@ for i in range(len(whitelist)):
     whitelist[i] = whitelist[i][0]
 print(whitelist)
 GUILD_ID = '934824600498483220'
+KST = datetime.timezone(datetime.timedelta(hours=9))
 
 
 class StarForceEvent(Enum):
@@ -39,8 +40,9 @@ class MyClient(discord.Client):
         cur.execute("SELECT * FROM whitelist")
         cur.close()
 
-    @tasks.loop(hours=168)
+    @tasks.loop(datetime.time(hour=10, minute=10, tzinfo=KST))
     async def sunday_maple(self):
+
         url = 'https://maplestory.nexon.com/News/Event/Ongoing'
         res = requests.get(url)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -64,14 +66,6 @@ class MyClient(discord.Client):
             image_binary = io.BytesIO(img.content)
             image_file = discord.File(image_binary, filename="sunday.jpg")
         await channel.send(file=image_file)
-
-    @sunday_maple.before_loop
-    async def before_sunday(self):
-        for _ in range(60*60*24*7):
-            if datetime.datetime.utcnow().strftime("%a %p %I:%M") == "Fri AM 01:10":
-                print('썬데이 받아라!')
-                return
-            await asyncio.sleep(30)
 
     async def on_ready(self):
         await self.wait_until_ready()
