@@ -68,10 +68,10 @@ class MyClient(discord.Client):
     @sunday_maple.before_loop
     async def before_sunday(self):
         for _ in range(60*60*24*7):
-            if datetime.datetime.utcnow().strftime("%a %p %I:%M") == "Fri AM 02:10":
+            if datetime.datetime.utcnow().strftime("%a %p %I:%M") == "Fri AM 01:10":
                 print('썬데이 받아라!')
                 return
-            await asyncio.sleep(30)
+        await asyncio.sleep(30)
 
     async def on_ready(self):
         await self.wait_until_ready()
