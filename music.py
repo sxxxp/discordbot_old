@@ -71,7 +71,7 @@ class MyClient(discord.Client):
             if datetime.datetime.utcnow().strftime("%a %p %I:%M") == "Fri AM 01:10":
                 print('썬데이 받아라!')
                 return
-        await asyncio.sleep(30)
+            await asyncio.sleep(30)
 
     async def on_ready(self):
         await self.wait_until_ready()
