@@ -38,7 +38,7 @@ class MyClient(discord.Client):
     async def on_ready(self):
         await self.wait_until_ready()
         await client.change_presence(status=discord.Status.online, activity=discord.Game("노래"))
-        await tree.sync(guild=discord.Object(id=GUILD_ID))
+        await tree.sync()
         print(f"{self.user} 에 로그인하였습니다!")
         self.reset_connect.start()
 
