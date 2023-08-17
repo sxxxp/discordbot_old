@@ -311,33 +311,6 @@ class Simulator:
         await self.setup(self.interaction)
 
 
-@tree.command(name="디버깅", description="디버깅")
-async def debuging(interaction: Interaction):
-    url = 'https://maplestory.nexon.com/News/Event/Closed'
-    res = requests.get(url)
-    soup = BeautifulSoup(res.text, 'html.parser')
-    print(soup)
-    events = soup.select('dl dd p a')
-    sunday_url = ""
-    for event in events:
-        if event.getText() == "썬데이 메이플":
-            sunday_url = url+"/"+event['href'].split("/")[-1]
-            break
-    if not sunday_url:
-        channel = interaction.guild.get_channel(1004352123091292272)
-        return await channel.send("썬데이를 찾지 못했어요...")
-    res = requests.get(sunday_url)
-    soup = BeautifulSoup(res.text, 'html.parser')
-    print(soup)
-    src = soup.select_one(".new_board_con div div img")['src']
-    img = requests.get(src)
-    if img.status_code == 200:
-        image_binary = io.BytesIO(img.content)
-        image_file = discord.File(image_binary, filename="sunday.jpg")
-    channel = interaction.guild.get_channel(1004352123091292272)
-    await channel.send(file=image_file)
-
-
 @tree.command(name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
 async def StarForceSimulator(interaction: Interaction, 시작별: int, 메소: int, 이벤트: StarForceEvent, 장비레벨: int):
     await Simulator(메소, 장비레벨, 시작별, interaction, 이벤트).validity()
