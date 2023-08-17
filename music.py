@@ -5,11 +5,15 @@ from discord import app_commands, Interaction, ui, ButtonStyle
 import asyncio
 import requests
 import os
+import io
+import datetime
 import random
 from enum import Enum
 from bs4 import BeautifulSoup
 import re
+# import dotenv
 
+# dotenv.load_dotenv()
 con = pymysql.connect(host=os.environ['host'], port=int(os.environ['port']), user="root",
                       database="guildDatabase", passwd=os.environ['password'], charset='utf8', connect_timeout=120)
 cur = con.cursor()
@@ -35,10 +39,42 @@ class MyClient(discord.Client):
         cur.execute("SELECT * FROM whitelist")
         cur.close()
 
+    @tasks.loop(hours=168)
+    async def sunday_maple(self):
+        url = 'https://maplestory.nexon.com/News/Event/Ongoing'
+        res = requests.get(url)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        events = soup.select('dl dd p a')
+        sunday_url = ""
+        for event in events:
+            if event.getText() == "썬데이 메이플":
+                sunday_url = url+"/"+event['href'].split("/")[-1]
+                break
+        channel = self.get_channel(1004352123091292272)
+        if not sunday_url:
+            return await channel.send("썬데이를 찾지 못했어요...")
+        res = requests.get(sunday_url)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        src = soup.select_one(".new_board_con div div img")['src']
+        img = requests.get(src)
+        if img.status_code == 200:
+            image_binary = io.BytesIO(img.content)
+            image_file = discord.File(image_binary, filename="sunday.jpg")
+        await channel.send(file=image_file)
+
+    @sunday_maple.before_loop
+    async def before_sunday(self):
+        for _ in range(60*60*24*7):
+            if datetime.datetime.utcnow().strftime("%a %p %I:%M") == "Fri AM 02:10":
+                print('썬데이 받아라!')
+                return
+            await asyncio.sleep(30)
+
     async def on_ready(self):
         await self.wait_until_ready()
         await client.change_presence(status=discord.Status.online, activity=discord.Game("노래"))
         await tree.sync()
+        print(datetime.datetime.now())
         print(f"{self.user} 에 로그인하였습니다!")
         self.reset_connect.start()
 
@@ -273,6 +309,33 @@ class Simulator:
         self.eventHandler()
         await self.interaction.response.send_message("준비중입니다.")
         await self.setup(self.interaction)
+
+
+@tree.command(name="디버깅", description="디버깅")
+async def debuging(interaction: Interaction):
+    url = 'https://maplestory.nexon.com/News/Event/Closed'
+    res = requests.get(url)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    print(soup)
+    events = soup.select('dl dd p a')
+    sunday_url = ""
+    for event in events:
+        if event.getText() == "썬데이 메이플":
+            sunday_url = url+"/"+event['href'].split("/")[-1]
+            break
+    if not sunday_url:
+        channel = interaction.guild.get_channel(1004352123091292272)
+        return await channel.send("썬데이를 찾지 못했어요...")
+    res = requests.get(sunday_url)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    print(soup)
+    src = soup.select_one(".new_board_con div div img")['src']
+    img = requests.get(src)
+    if img.status_code == 200:
+        image_binary = io.BytesIO(img.content)
+        image_file = discord.File(image_binary, filename="sunday.jpg")
+    channel = interaction.guild.get_channel(1004352123091292272)
+    await channel.send(file=image_file)
 
 
 @tree.command(name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
