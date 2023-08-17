@@ -235,17 +235,16 @@ class Simulator:
                 return
             embed = discord.Embed(title="종료")
             embed.add_field(
-                name="\u200b", value=f"```초기자금 : {round(self.parent.first/100000000,4)}억\n사용 후 : {round(self.parent.messo/100000000,4)}억\n시작 스타포스 : {self.parent.start}성 > {self.parent.now}성\n최고 달성 : {self.parent.best[0]}성 {round((self.parent.first-self.parent.best[1])/100000000,4)}억 사용```", inline=False)
-            text = '```'
+                name="\u200b", value=f"```초기 메소 : {round(self.parent.first/100000000,4)}억\n사용 메소 : {round((self.parent.first-self.parent.messo)/100000000,4)}억\n남은 메소 : {round(self.parent.messo/100000000,4)}억\n시작 스타포스 : {self.parent.start}성 > {self.parent.now}성\n최고 달성 : {self.parent.best[0]}성 {round((self.parent.first-self.parent.best[1])/100000000,4)}억 사용```", inline=False)
+            text = ''
             prev = self.parent.first
             for idx, data in enumerate(self.parent.log):
                 money, current = data
                 spend = prev - money
                 prev -= spend
                 text += f"{idx+1}번째 파괴 {round(spend/100000000,4)}억 사용 {current}성에서 파괴\n"
-            text += '```'
             if text:
-                embed.add_field(name="파괴기록", value=text)
+                embed.add_field(name="파괴기록", value=f"```{text}```")
             await interaction.response.edit_message(content="", embed=embed, view=None)
             await asyncio.sleep(30)
             await interaction.delete_original_response()
