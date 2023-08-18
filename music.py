@@ -334,7 +334,7 @@ class Simulator:
 
 @tree.command(name="썬데이알림", description="썬데이 알림을 받을 채널을 선택할수 있어요")
 async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel = None):
-    if not interaction.user.guild_permissions.administrator():
+    if not interaction.user.guild_permissions.administrator:
         return await interaction.response.send_message("채널 변경할 권한이 없어요!")
     if not 채널:
         del sunday_channel[str(interaction.guild.id)]
