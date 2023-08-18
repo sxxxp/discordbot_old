@@ -23,7 +23,7 @@ for i in range(len(whitelist)):
     whitelist[i] = whitelist[i][0]
 print(whitelist)
 sunday_channel = {}
-cur.execute("SELECT guild,id FROM sunday_channel")
+cur.execute("SELECT guild,channel FROM sunday_channel")
 data = list(cur.fetchall())
 for key, value in data:
     sunday_channel[key] = value
@@ -60,9 +60,16 @@ class MyClient(discord.Client):
             if event.getText() == "썬데이 메이플":
                 sunday_url = url+"/"+event['href'].split("/")[-1]
                 break
-        channel = self.get_channel(1004352123091292272)
         if not sunday_url:
-            await channel.send("썬데이를 찾지 못했어요...")
+            for key, value in sunday_channel.items():
+                channel = self.get_channel(int(value))
+                if channel:
+                    await channel.send("썬데이를 찾지 못했어요...")
+                else:
+                    del sunday_channel[key]
+                    cur.execute(
+                        "DELETE FROM sunday_channel WHERE guild = %s", key)
+                    con.commit()
             await asyncio.sleep(1800)
             self.sunday_maple.restart()
             return
@@ -73,7 +80,15 @@ class MyClient(discord.Client):
         if img.status_code == 200:
             image_binary = io.BytesIO(img.content)
             image_file = discord.File(image_binary, filename="sunday.jpg")
-        await channel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+        for key, value in sunday_channel.items():
+            channel = self.get_channel(int(value))
+            if channel:
+                await channel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+            else:
+                del sunday_channel[key]
+                cur.execute(
+                    "DELETE FROM sunday_channel WHERE guild = %s", key)
+                con.commit()
 
     async def on_ready(self):
         await self.wait_until_ready()
@@ -317,11 +332,12 @@ class Simulator:
         await self.setup(self.interaction)
 
 
-@tree.command(name="선데이알림", description="선데이 알림을 받을 채널을 선택할수 있어요")
+@tree.command(name="썬데이알림", description="썬데이 알림을 받을 채널을 선택할수 있어요")
 async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel = None):
     if not interaction.user.guild_permissions.administrator():
         return await interaction.response.send_message("채널 변경할 권한이 없어요!")
     if not 채널:
+        del sunday_channel[str(interaction.guild.id)]
         cur.execute("DELETE FROM sunday_channel WHERE guild = %s",
                     interaction.guild.id)
         con.commit()
@@ -329,12 +345,14 @@ async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel =
     check = cur.execute(
         "SELECT COUNT(*) FROM sunday_channel WHERE guild = %s", interaction.guild.id)
     if check:
-        cur.execute("UPDATE sunday_channel SET id = %s WHERE guild = %s",
+        sunday_channel[str(interaction.guild.id)] = str(채널.id)
+        cur.execute("UPDATE sunday_channel SET channel = %s WHERE guild = %s",
                     (채널.id, interaction.guild.id))
         con.commit()
         return await interaction.response.send_message(f"알림 받을 채널이 {채널.mention}로 변경되었습니다.")
     else:
-        cur.execute("INSERT INTO sunday_channel(guild,id) VALUES(%s,%s)",
+        sunday_channel[str(interaction.guild.id)] = str(채널.id)
+        cur.execute("INSERT INTO sunday_channel(guild,channel) VALUES(%s,%s)",
                     (interaction.guild.id, 채널.id))
         con.commit()
         return await interaction.response.send_message(f"알림 받을 채널이 {채널.mention}로 설정되었습니다.")
