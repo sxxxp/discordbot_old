@@ -22,6 +22,12 @@ whitelist = list(cur.fetchall())
 for i in range(len(whitelist)):
     whitelist[i] = whitelist[i][0]
 print(whitelist)
+sunday_channel = {}
+cur.execute("SELECT guild,id FROM sunday_channel")
+data = list(cur.fetchall())
+for key, value in data:
+    sunday_channel[key] = value
+print(sunday_channel)
 GUILD_ID = '934824600498483220'
 KST = datetime.timezone(datetime.timedelta(hours=9))
 
@@ -309,6 +315,29 @@ class Simulator:
         self.eventHandler()
         await self.interaction.response.send_message("준비중입니다.")
         await self.setup(self.interaction)
+
+
+@tree.command(name="선데이알림", description="선데이 알림을 받을 채널을 선택할수 있어요")
+async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel = None):
+    if not interaction.user.guild_permissions.administrator():
+        return await interaction.response.send_message("채널 변경할 권한이 없어요!")
+    if not 채널:
+        cur.execute("DELETE FROM sunday_channel WHERE guild = %s",
+                    interaction.guild.id)
+        con.commit()
+        return await interaction.response.send_message("이제부터 선데이 알림을 받지 않아요.")
+    check = cur.execute(
+        "SELECT COUNT(*) FROM sunday_channel WHERE guild = %s", interaction.guild.id)
+    if check:
+        cur.execute("UPDATE sunday_channel SET id = %s WHERE guild = %s",
+                    (채널.id, interaction.guild.id))
+        con.commit()
+        return await interaction.response.send_message(f"알림 받을 채널이 {채널.mention}로 변경되었습니다.")
+    else:
+        cur.execute("INSERT INTO sunday_channel(guild,id) VALUES(%s,%s)",
+                    (interaction.guild.id, 채널.id))
+        con.commit()
+        return await interaction.response.send_message(f"알림 받을 채널이 {채널.mention}로 설정되었습니다.")
 
 
 @tree.command(name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
