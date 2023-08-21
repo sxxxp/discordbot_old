@@ -46,7 +46,6 @@ class MyClient(discord.Client):
         cur.execute("SELECT * FROM whitelist")
         cur.close()
 
-    @tasks.loop(time=datetime.time(hour=10, minute=10, tzinfo=KST))
     async def sunday_maple(self):
         print("썬데이 루프")
         if not datetime.datetime.today().weekday() == 4:
@@ -71,7 +70,7 @@ class MyClient(discord.Client):
                         "DELETE FROM sunday_channel WHERE guild = %s", key)
                     con.commit()
             await asyncio.sleep(1800)
-            self.sunday_maple.restart()
+            await self.sunday_maple()
             return
         res = requests.get(sunday_url)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -89,6 +88,10 @@ class MyClient(discord.Client):
                 cur.execute(
                     "DELETE FROM sunday_channel WHERE guild = %s", key)
                 con.commit()
+
+    @tasks.loop(time=datetime.time(hour=10, minute=10, tzinfo=KST))
+    async def sunday_maple_loop(self):
+        await self.sunday_maple()
 
     async def on_ready(self):
         await self.wait_until_ready()
