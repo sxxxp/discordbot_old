@@ -342,8 +342,9 @@ async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel =
                     interaction.guild.id)
         con.commit()
         return await interaction.response.send_message("이제부터 선데이 알림을 받지 않아요.")
-    check = cur.execute(
+    cur.execute(
         "SELECT COUNT(*) FROM sunday_channel WHERE guild = %s", interaction.guild.id)
+    check = cur.fetchone()[0]
     if check:
         sunday_channel[str(interaction.guild.id)] = str(채널.id)
         cur.execute("UPDATE sunday_channel SET channel = %s WHERE guild = %s",
