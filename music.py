@@ -100,7 +100,7 @@ class MyClient(discord.Client):
         print(datetime.datetime.now())
         print(f"{self.user} 에 로그인하였습니다!")
         self.reset_connect.start()
-        self.sunday_maple.start()
+        self.sunday_maple_loop.start()
 
     # async def on_message(self, message: discord.Message):
     #     if message.author == self.user:
@@ -360,6 +360,12 @@ async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel =
                     (interaction.guild.id, 채널.id))
         con.commit()
         return await interaction.response.send_message(f"알림 받을 채널이 {채널.mention}로 설정되었습니다.")
+
+
+@tree.command(nmae="썬데이강제", description="개발자명령어")
+async def forcedSunday(interaction: Interaction):
+    if interaction.user.id == 432066597591449600:
+        await client.sunday_maple()
 
 
 @tree.command(name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
