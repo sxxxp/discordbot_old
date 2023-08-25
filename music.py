@@ -76,10 +76,10 @@ class MyClient(discord.Client):
         soup = BeautifulSoup(res.text, 'html.parser')
         src = soup.select_one(".new_board_con div div img")['src']
         img = requests.get(src)
-        if img.status_code == 200:
-            image_binary = io.BytesIO(img.content)
-            image_file = discord.File(image_binary, filename="sunday.jpg")
         for key, value in sunday_channel.items():
+            if img.status_code == 200:
+                image_binary = io.BytesIO(img.content)
+                image_file = discord.File(image_binary, filename="sunday.jpg")
             channel = self.get_channel(int(value))
             if channel:
                 await channel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
