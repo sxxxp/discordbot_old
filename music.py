@@ -48,6 +48,7 @@ class MyClient(discord.Client):
 
     async def sunday_maple(self):
         print("썬데이 루프")
+        print(sunday_channel)
         if not datetime.datetime.today().weekday() == 4:
             return
         url = 'https://maplestory.nexon.com/News/Event/Ongoing'
@@ -76,15 +77,15 @@ class MyClient(discord.Client):
         soup = BeautifulSoup(res.text, 'html.parser')
         src = soup.select_one(".new_board_con div div img")['src']
         img = requests.get(src)
-        for key, value in sunday_channel.items():
+        for guild, channel in sunday_channel.items():
             if img.status_code == 200:
                 image_binary = io.BytesIO(img.content)
                 image_file = discord.File(image_binary, filename="sunday.jpg")
-            channel = self.get_channel(int(value))
-            if channel:
-                await channel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+            guildChannel = self.get_channel(int(channel))
+            if guildChannel:
+                await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
             else:
-                del sunday_channel[key]
+                del sunday_channel[guild]
                 cur.execute(
                     "DELETE FROM sunday_channel WHERE guild = %s", key)
                 con.commit()
