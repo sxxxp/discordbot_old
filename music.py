@@ -362,7 +362,7 @@ async def Sunday_Setting(interaction: Interaction, 채널: discord.TextChannel =
         return await interaction.response.send_message(f"알림 받을 채널이 {채널.mention}로 설정되었습니다.")
 
 
-@tree.command(nmae="썬데이강제", description="개발자명령어")
+@tree.command(name="썬데이강제", description="개발자명령어")
 async def forcedSunday(interaction: Interaction):
     if interaction.user.id == 432066597591449600:
         await client.sunday_maple()
