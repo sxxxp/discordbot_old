@@ -12,6 +12,9 @@ from enum import Enum
 from bs4 import BeautifulSoup
 import re
 # import dotenv
+BASE_URL = "https://maplestory.nexon.com"
+RANKING_USER_DATA_SELECTOR = "table.rank_table > tbody > tr.search_com_chk > td"
+RANKING_USER_UNION_SELECTOR = "tr.search_com_chk > td"
 
 # dotenv.load_dotenv()
 con = pymysql.connect(host=os.environ['host'], port=int(os.environ['port']), user="root",
@@ -89,6 +92,46 @@ class MyClient(discord.Client):
                 cur.execute(
                     "DELETE FROM sunday_channel WHERE guild = %s", key)
                 con.commit()
+
+    async def sunday_maple_channel(self, guild: int, id: int):
+        print("썬데이 루프")
+        if not datetime.datetime.today().weekday() == 4:
+            return
+        url = 'https://maplestory.nexon.com/News/Event/Ongoing'
+        res = requests.get(url)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        events = soup.select('dl dd p a')
+        sunday_url = ""
+        for event in events:
+            if event.getText() == "썬데이 메이플":
+                sunday_url = url+"/"+event['href'].split("/")[-1]
+                break
+        if not sunday_url:
+            channel = self.get_channel(int(id))
+            if channel:
+                await channel.send("썬데이를 찾지 못했어요...")
+            else:
+                del sunday_channel[guild]
+                cur.execute(
+                    "DELETE FROM sunday_channel WHERE guild = %s", guild)
+                con.commit()
+            await asyncio.sleep(1800)
+            await self.sunday_maple_channel(guild, id)
+        res = requests.get(sunday_url)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        src = soup.select_one(".new_board_con div div img")['src']
+        img = requests.get(src)
+        if img.status_code == 200:
+            image_binary = io.BytesIO(img.content)
+            image_file = discord.File(image_binary, filename="sunday.jpg")
+        guildChannel = self.get_channel(int(id))
+        if guildChannel:
+            await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+        else:
+            del sunday_channel[guild]
+            cur.execute(
+                "DELETE FROM sunday_channel WHERE guild = %s", key)
+            con.commit()
 
     @tasks.loop(time=datetime.time(hour=10, minute=10, tzinfo=KST))
     async def sunday_maple_loop(self):
@@ -369,6 +412,12 @@ async def forcedSunday(interaction: Interaction):
         await client.sunday_maple()
 
 
+@tree.command(name="썬데이강제채널", description="개발자명령어")
+async def forcedSundayChannel(interaction: Interaction, 채널: discord.TextChannel):
+    if interaction.user.id == 432066597591449600:
+        await client.sunday_maple_channel(채널.guild.id, 채널.id)
+
+
 @tree.command(name="스타포스", description="스타포스 시뮬레이터를 굴릴 수 있습니다.")
 async def StarForceSimulator(interaction: Interaction, 시작별: int, 메소: int, 이벤트: StarForceEvent, 장비레벨: int):
     await Simulator(메소, 장비레벨, 시작별, interaction, 이벤트).validity()
@@ -528,59 +577,56 @@ async def searchGuild(interaction: Interaction, 길드명: str):
 @tree.command(name="캐릭터검색", description='캐릭터를 검색합니다.')
 async def search(interaction: Interaction, 닉네임: str):
     await interaction.response.send_message("유저를 찾고 있어요!")
-    url = 'https://maple.gg/u/' + 닉네임
-    requests.get(url+'/sync')
-    await asyncio.sleep(2)
+    url = f'{BASE_URL}/N23Ranking/World/Total?c={닉네임}&w=0'
     res = requests.get(url)
     soup = BeautifulSoup(res.text, 'html.parser')
-    try:
-        soup.select_one('.mb-3')['alt']
-    except KeyError:
-        level, job, ingido = soup.select('.user-summary-item')
-        ingido.text[4:]
-        guild = soup.select('.text-yellow.text-underline')
-        character = soup.select(".character-image")
-        moorong = soup.select(".user-summary-floor.font-weight-bold")
-        cnt = 0
-        seed_cnt = 0
-
-        if len(moorong) == 1:
-            cnt = 1
-            seed = moorong[0].text
-        elif len(moorong) == 2:
-
-            seed = moorong[1].text
-        if not moorong:
-            cnt = 1
-            seed_cnt = 1
-            seed = ''
-            moorong = '0'
-        else:
-            moorong = moorong[0].text.replace(" ", "")[:2]
-        date = soup.select('.user-summary-date')
-        union = soup.select(".user-summary-level")
-        embed = discord.Embed(title=f"{닉네임}({job.text})")
-        url = character[0]['src'].replace("https", "http")
-        if not guild:
-            guild = '없음'
-        else:
-            guild = guild[0].text
-        union = '0' if not union else union[0].text
-        if not seed:
-            seed_cnt = 1
-        embed.set_thumbnail(url=url)
-        embed.add_field(name=f"레벨 : {level.text}", value='\u200b', inline=True)
-        embed.add_field(
-            name=f"인기도 : {ingido.text[4:]}", value='\u200b', inline=True)
-        embed.add_field(
-            name=f"길드 : {guild}", value='\u200b', inline=False)
-        embed.add_field(
-            name=f"무릉 : {moorong}층", value=date[0].text if moorong != '0' else '\u200b', inline=True)
-        embed.add_field(
-            name=f"유니온 : {union}", value=date[2-seed_cnt-cnt].text if union != '0' else '\u200b', inline=True)
-        await interaction.edit_original_response(content="", embed=embed)
+    data = soup.select(RANKING_USER_DATA_SELECTOR)
+    if not data:
+        url = f'{BASE_URL}/N23Ranking/World/Total?c={닉네임}&w=254'
+        res = requests.get(url)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        data = soup.select(RANKING_USER_DATA_SELECTOR)
+    if not data:
+        return await interaction.edit_original_response(content="유저를 찾을 수 없어요!")
+    level = data[2].get_text()
+    exp = data[3].get_text().replace(",", '')
+    server = data[1].select_one("dl > dt > a > img")['src']
+    job = data[1].select_one("dl > dd").get_text().split("/")[1]
+    ingido = data[4].get_text()
+    guild = data[5].get_text()
+    img = data[1].select_one("span.char_img > img")['src']
+    compare_level = int(level.replace("Lv.", ""))
+    union_url = f'{BASE_URL}/N23Ranking/World/Union?c={닉네임}&w=0'
+    res = requests.get(union_url)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    union = soup.select(RANKING_USER_UNION_SELECTOR)[2].get_text()
+    if not union:
+        union = "대표캐릭터가 아닙니다."
+    exp_data_url = "https://namu.wiki/w/%EB%A9%94%EC%9D%B4%ED%94%8C%EC%8A%A4%ED%86%A0%EB%A6%AC/%EC%8B%9C%EC%8A%A4%ED%85%9C/%EA%B2%BD%ED%97%98%EC%B9%98"
+    res = requests.get(exp_data_url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    newbie = soup.select("table")[1]
+    middle = soup.select("table")[2]
+    goinmoll = soup.select("table")[3]
+    data = newbie.select(
+        "tbody > tr") if compare_level < 200 else middle.select("tbody > tr") if 200 <= compare_level < 260 else goinmoll.select("tbody > tr")
+    if compare_level >= 260:
+        compare_level -= 260
+    elif compare_level >= 200:
+        compare_level -= 200
     else:
-        await interaction.edit_original_response(content='유저가 없어요.')
-
+        compare_level -= 1
+    req = ''.join(data[compare_level+1].select("td")
+                  [1].select_one("div").find_all(string=True, recursive=False)).replace(",", '')
+    percent = round(int(exp)/int(req)*100, 3)
+    embed = discord.Embed(title=f"{닉네임}({job})")
+    embed.set_author(name="서버", url=server)
+    embed.set_thumbnail(url=img)
+    embed.add_field(name=f"{level}({percent})", value="\u200b")
+    embed.add_field(name=f"인기도 {ingido}", value="\u200b")
+    embed.add_field(name=f"길드 : {guild}", value="\u200b", inline=False)
+    embed.add_field(name=f"유니온 : {union}", value="\u200b")
+    embed.add_field(name=f"무릉은 준비중이에요...", value="\u200b")
+    await interaction.edit_original_response(content="", embed=embed)
 
 client.run(os.environ['token'])
