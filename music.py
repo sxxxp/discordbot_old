@@ -5,6 +5,7 @@ from discord import app_commands, Interaction, ui, ButtonStyle
 import asyncio
 import requests
 import os
+import json
 import io
 import datetime
 import random
@@ -15,6 +16,22 @@ import re
 BASE_URL = "https://maplestory.nexon.com"
 RANKING_USER_DATA_SELECTOR = "table.rank_table > tbody > tr.search_com_chk > td"
 RANKING_USER_UNION_SELECTOR = "tr.search_com_chk > td"
+
+
+def getJson(url: str):
+    '''
+    JSON 구하기
+    -----------
+    - url: JSON 파일 주소
+
+    - ex) getJson('./json/util.json')
+
+    `return 파싱된 JSON 파일`
+    '''
+    file = open(url, 'r', encoding="utf-8")
+    data: dict = json.load(file)
+    return data
+
 
 # dotenv.load_dotenv()
 con = pymysql.connect(host=os.environ['host'], port=int(os.environ['port']), user="root",
@@ -33,6 +50,7 @@ for key, value in data:
 print(sunday_channel)
 GUILD_ID = '934824600498483220'
 KST = datetime.timezone(datetime.timedelta(hours=9))
+EXP_DATA = getJson("level.json")
 
 
 class StarForceEvent(Enum):
@@ -602,23 +620,8 @@ async def search(interaction: Interaction, 닉네임: str):
     union = soup.select(RANKING_USER_UNION_SELECTOR)[2].get_text()
     if not union:
         union = "대표캐릭터가 아닙니다."
-    exp_data_url = "https://namu.wiki/w/%EB%A9%94%EC%9D%B4%ED%94%8C%EC%8A%A4%ED%86%A0%EB%A6%AC/%EC%8B%9C%EC%8A%A4%ED%85%9C/%EA%B2%BD%ED%97%98%EC%B9%98"
-    res = requests.get(exp_data_url)
-    soup = BeautifulSoup(res.text, "html.parser")
-    newbie = soup.select("table")[1]
-    middle = soup.select("table")[2]
-    goinmoll = soup.select("table")[3]
-    data = newbie.select(
-        "tbody > tr") if compare_level < 200 else middle.select("tbody > tr") if 200 <= compare_level < 260 else goinmoll.select("tbody > tr")
-    if compare_level >= 260:
-        compare_level -= 260
-    elif compare_level >= 200:
-        compare_level -= 200
-    else:
-        compare_level -= 1
-    req = ''.join(data[compare_level+1].select("td")
-                  [1].select_one("div").find_all(string=True, recursive=False)).replace(",", '')
-    percent = round(int(exp)/int(req)*100, 3)
+    req = EXP_DATA[str(compare_level)]
+    percent = round(int(exp)/req*100, 3)
     embed = discord.Embed(title=f"{닉네임}({job})")
     embed.set_author(name="서버", url=server)
     embed.set_thumbnail(url=img)
