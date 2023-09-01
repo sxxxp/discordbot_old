@@ -2,24 +2,35 @@ from bs4 import BeautifulSoup
 import requests
 import time
 import json
-exp_data_url = "https://namu.wiki/w/%EB%A9%94%EC%9D%B4%ED%94%8C%EC%8A%A4%ED%86%A0%EB%A6%AC/%EC%8B%9C%EC%8A%A4%ED%85%9C/%EA%B2%BD%ED%97%98%EC%B9%98"
-res = requests.get(exp_data_url)
-soup = BeautifulSoup(res.text, "html.parser")
-newbie = soup.select("table")[1]
-middle = soup.select("table")[2]
-goinmoll = soup.select("table")[3]
-data = {}
-for i in range(1, 200):
-    data[i] = int(''.join(newbie.select("tr")[i].select("td")[1].select_one(
-        "div").find_all(string=True, recursive=False)).replace(",", ''))
-for i in range(1, 60):
-    a = ''.join(middle.select("tr")[i].select("td")[1].select_one(
-        "div").find_all(string=True, recursive=False)).replace(",", '')
-    print(i, a)
-    data[i+199] = int(a)
-for i in range(1, 40):
-    data[i+259] = int(''.join(goinmoll.select("tr")[i].select("td")[1].select_one(
-        "div").find_all(string=True, recursive=False)).replace(",", ''))
-json_string = json.dumps(data, indent=4)
-with open("level.json", "w") as json_file:
-    json_file.write(json_string)
+BASE_URL = "https://maplestory.nexon.com"
+RANKING_USER_DATA_SELECTOR = "table.rank_table > tbody > tr.search_com_chk > td"
+RANKING_USER_UNION_SELECTOR = "tr.search_com_chk > td"
+
+닉네임 = "양다래새"
+url = f'{BASE_URL}/N23Ranking/World/Total?c={닉네임}&w=0'
+res = requests.get(url)
+soup = BeautifulSoup(res.text, 'html.parser')
+data = soup.select(RANKING_USER_DATA_SELECTOR)
+if not data:
+    url = f'{BASE_URL}/N23Ranking/World/Total?c={닉네임}&w=254'
+    res = requests.get(url)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    data = soup.select(RANKING_USER_DATA_SELECTOR)
+# if not data:
+#     return await interaction.edit_original_response(content="유저를 찾을 수 없어요!")
+level = data[2].get_text()
+exp = data[3].get_text().replace(",", '')
+server = data[1].select_one("dl > dt > a > img")['src']
+job = data[1].select_one("dl > dd").get_text().split("/")[1]
+ingido = data[4].get_text()
+guild = data[5].get_text()
+img = data[1].select_one("span.char_img > img")['src']
+compare_level = int(level.replace("Lv.", ""))
+union_url = f'{BASE_URL}/N23Ranking/World/Union?c={닉네임}&w=0'
+res = requests.get(union_url)
+soup = BeautifulSoup(res.text, 'html.parser')
+union = soup.select(RANKING_USER_UNION_SELECTOR)[2].get_text()
+if not union:
+    union = "대표캐릭터가 아닙니다."
+req = EXP_DATA[str(compare_level)]
+percent = round(int(exp)/req*100, 3)

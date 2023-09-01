@@ -620,6 +620,8 @@ async def search(interaction: Interaction, 닉네임: str):
     union = soup.select(RANKING_USER_UNION_SELECTOR)[2].get_text()
     if not union:
         union = "대표캐릭터가 아닙니다."
+    else:
+        union = "Lv."+str(union)
     req = EXP_DATA[str(compare_level)]
     percent = round(int(exp)/req*100, 3)
     embed = discord.Embed(title=f"{닉네임}({job})")
