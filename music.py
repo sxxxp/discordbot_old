@@ -625,8 +625,10 @@ async def search(interaction: Interaction, 닉네임: str):
     req = EXP_DATA[str(compare_level)]
     percent = round(int(exp)/req*100, 3)
     embed = discord.Embed(title=f"{닉네임}({job})")
-    embed.set_author(name="서버", url=server)
-    embed.set_thumbnail(url=img)
+    server: str
+    embed.set_author(name="서버", url=BASE_URL+"/"+server)
+    img: str
+    embed.set_thumbnail(url=BASE_URL+"/"+img)
     embed.add_field(name=f"{level}({percent})", value="\u200b")
     embed.add_field(name=f"인기도 {ingido}", value="\u200b")
     embed.add_field(name=f"길드 : {guild}", value="\u200b", inline=False)
