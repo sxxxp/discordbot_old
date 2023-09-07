@@ -634,7 +634,7 @@ async def search(interaction: Interaction, 닉네임: str):
     img: str
     img = '/'.join(img[7:].split("/").pop(2))
     print(server, img)
-    embed.set_thumbnail(url="https://"+img)
+    embed.set_thumbnail(url="https:/"+img)
     embed.add_field(name=f"{level}({percent}%)", value="\u200b")
     embed.add_field(name=f"인기도 {ingido}", value="\u200b")
     embed.add_field(name=f"길드 : {guild}", value="\u200b", inline=False)
