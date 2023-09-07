@@ -164,6 +164,10 @@ class MyClient(discord.Client):
         self.reset_connect.start()
         self.sunday_maple_loop.start()
 
+    async def on_error(self, event_method: str, /, *args, **kwargs) -> None:
+        print(args)
+        return await super().on_error(event_method, *args, **kwargs)
+
     # async def on_message(self, message: discord.Message):
     #     if message.author == self.user:
     #         return False
@@ -625,11 +629,11 @@ async def search(interaction: Interaction, 닉네임: str):
     req = EXP_DATA[str(compare_level)]
     percent = round(int(exp)/req*100, 3)
     embed = discord.Embed(title=f"{닉네임}({job.replace(' ','')})")
-    print(server, img)
     server: str
     embed.set_author(name="서버", url=server)
     img: str
     img = '/'.join(img[7:].split("/").pop(2))
+    print(server, img)
     embed.set_thumbnail(url="https://"+img)
     embed.add_field(name=f"{level}({percent}%)", value="\u200b")
     embed.add_field(name=f"인기도 {ingido}", value="\u200b")
