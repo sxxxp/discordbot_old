@@ -630,18 +630,19 @@ async def search(interaction: Interaction, 닉네임: str):
     percent = round(int(exp)/req*100, 3)
     embed = discord.Embed(title=f"{닉네임}({job.replace(' ','')})")
     server: str
+    server = "http://"+server[7:]
     embed.set_author(name="서버", url=server)
     img: str
     a = img[7:].split("/")
     a.remove("180")
     img = '/'.join(a)
     print(server, img)
-    embed.set_thumbnail(url="https:/"+img)
+    embed.set_thumbnail(url="http:/"+img)
     embed.add_field(name=f"{level}({percent}%)", value="\u200b")
     embed.add_field(name=f"인기도 {ingido}", value="\u200b")
     embed.add_field(name=f"길드 : {guild}", value="\u200b", inline=False)
     embed.add_field(name=f"유니온 : {union}", value="\u200b")
     embed.add_field(name=f"무릉은 준비중이에요...", value="\u200b")
-    await interaction.edit_original_response(content="http:/"+img, embed=embed)
+    await interaction.edit_original_response(content="", embed=embed)
 
 client.run(os.environ['token'])
