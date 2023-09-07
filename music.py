@@ -630,7 +630,7 @@ async def search(interaction: Interaction, 닉네임: str):
     percent = round(int(exp)/req*100, 3)
     embed = discord.Embed(title=f"{닉네임}({job.replace(' ','')})")
     server: str
-    server = "http://"+server[7:]
+    server = "http:/"+server[7:]
     embed.set_author(name="서버", url=server)
     img: str
     a = img[7:].split("/")
