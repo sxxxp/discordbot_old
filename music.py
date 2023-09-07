@@ -642,6 +642,6 @@ async def search(interaction: Interaction, 닉네임: str):
     embed.add_field(name=f"길드 : {guild}", value="\u200b", inline=False)
     embed.add_field(name=f"유니온 : {union}", value="\u200b")
     embed.add_field(name=f"무릉은 준비중이에요...", value="\u200b")
-    await interaction.edit_original_response(content=img, embed=embed)
+    await interaction.edit_original_response(content="http:/"+img, embed=embed)
 
 client.run(os.environ['token'])
