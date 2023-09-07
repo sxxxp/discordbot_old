@@ -632,7 +632,9 @@ async def search(interaction: Interaction, 닉네임: str):
     server: str
     embed.set_author(name="서버", url=server)
     img: str
-    img = '/'.join(img[7:].split("/").pop(2))
+    a = img[7:].split("/")
+    a.remove("180")
+    img = '/'.join(a)
     print(server, img)
     embed.set_thumbnail(url="https:/"+img)
     embed.add_field(name=f"{level}({percent}%)", value="\u200b")
