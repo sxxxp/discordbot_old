@@ -621,7 +621,10 @@ async def search(interaction: Interaction, 닉네임: str):
     union_url = f'{BASE_URL}/N23Ranking/World/Union?c={닉네임}&w=0'
     res = requests.get(union_url)
     soup = BeautifulSoup(res.text, 'html.parser')
-    union = soup.select(RANKING_USER_UNION_SELECTOR)[2].get_text()
+    try:
+        union = soup.select(RANKING_USER_UNION_SELECTOR)[2].get_text()
+    except IndexError:
+        union = 0
     if not union:
         union = "대표캐릭터가 아닙니다."
     else:
