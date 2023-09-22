@@ -98,19 +98,23 @@ class MyClient(discord.Client):
             return
         res = requests.get(sunday_url)
         soup = BeautifulSoup(res.text, 'html.parser')
-        src = soup.select_one(".new_board_con div div img")['src']
-        img = requests.get(src)
+        img_soup = soup.select(".new_board_con div div img")
+        srcs = [img['src'] for img in img_soup]
+        imgs = [requests.get(src) for src in srcs]
         for guild, channel in sunday_channel.items():
-            if img.status_code == 200:
-                image_binary = io.BytesIO(img.content)
-                image_file = discord.File(image_binary, filename="sunday.jpg")
+            image_files = []
+            for idx, img in enumerate(imgs):
+                if img.status_code == 200:
+                    image_binary = io.BytesIO(img.content)
+                    image_files.append(discord.File(
+                        image_binary, filename=f"sunday{idx}.jpg"))
             guildChannel = self.get_channel(int(channel))
             if guildChannel:
-                await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+                await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", files=image_files)
             else:
                 del sunday_channel[guild]
                 cur.execute(
-                    "DELETE FROM sunday_channel WHERE guild = %s", key)
+                    "DELETE FROM sunday_channel WHERE guild = %s", guild)
                 con.commit()
 
     async def sunday_maple_channel(self, guild: int, id: int):
@@ -139,14 +143,18 @@ class MyClient(discord.Client):
             await self.sunday_maple_channel(guild, id)
         res = requests.get(sunday_url)
         soup = BeautifulSoup(res.text, 'html.parser')
-        src = soup.select_one(".new_board_con div div img")['src']
-        img = requests.get(src)
-        if img.status_code == 200:
-            image_binary = io.BytesIO(img.content)
-            image_file = discord.File(image_binary, filename="sunday.jpg")
+        img_soup = soup.select(".new_board_con div div img")
+        srcs = [img['src'] for img in img_soup]
+        imgs = [requests.get(src) for src in srcs]
+        image_files = []
+        for idx, img in enumerate(imgs):
+            if img.status_code == 200:
+                image_binary = io.BytesIO(img.content)
+                image_files.append(discord.File(
+                    image_binary, filename=f"sunday{idx}.jpg"))
         guildChannel = self.get_channel(int(id))
         if guildChannel:
-            await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+            await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", files=image_files)
         else:
             del sunday_channel[guild]
             cur.execute(
