@@ -92,7 +92,9 @@ class MyClient(discord.Client):
                         "DELETE FROM sunday_channel WHERE guild = %s", key)
                     con.commit()
             await asyncio.sleep(1800)
-            await self.sunday_maple()
+            self.sunday_count += 1
+            if self.sunday_count <= 2:
+                await self.sunday_maple()
             return
         res = requests.get(sunday_url)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -111,48 +113,49 @@ class MyClient(discord.Client):
                     "DELETE FROM sunday_channel WHERE guild = %s", key)
                 con.commit()
 
-    async def sunday_maple_channel(self, guild: int, id: int):
-        print("썬데이 루프")
-        if not datetime.datetime.today().weekday() == 4:
-            return
-        url = 'https://maplestory.nexon.com/News/Event/Ongoing'
-        res = requests.get(url)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        events = soup.select('dl dd p a')
-        sunday_url = ""
-        for event in events:
-            if event.getText() == "썬데이 메이플":
-                sunday_url = url+"/"+event['href'].split("/")[-1]
-                break
-        if not sunday_url:
-            channel = self.get_channel(int(id))
-            if channel:
-                await channel.send("썬데이를 찾지 못했어요...")
-            else:
-                del sunday_channel[guild]
-                cur.execute(
-                    "DELETE FROM sunday_channel WHERE guild = %s", guild)
-                con.commit()
-            await asyncio.sleep(1800)
-            await self.sunday_maple_channel(guild, id)
-        res = requests.get(sunday_url)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        src = soup.select_one(".new_board_con div div img")['src']
-        img = requests.get(src)
-        if img.status_code == 200:
-            image_binary = io.BytesIO(img.content)
-            image_file = discord.File(image_binary, filename="sunday.jpg")
-        guildChannel = self.get_channel(int(id))
-        if guildChannel:
-            await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
-        else:
-            del sunday_channel[guild]
-            cur.execute(
-                "DELETE FROM sunday_channel WHERE guild = %s", key)
-            con.commit()
+    # async def sunday_maple_channel(self, guild: int, id: int):
+    #     print("썬데이 루프")
+    #     if not datetime.datetime.today().weekday() == 4:
+    #         return
+    #     url = 'https://maplestory.nexon.com/News/Event/Ongoing'
+    #     res = requests.get(url)
+    #     soup = BeautifulSoup(res.text, 'html.parser')
+    #     events = soup.select('dl dd p a')
+    #     sunday_url = ""
+    #     for event in events:
+    #         if event.getText() == "썬데이 메이플":
+    #             sunday_url = url+"/"+event['href'].split("/")[-1]
+    #             break
+    #     if not sunday_url:
+    #         channel = self.get_channel(int(id))
+    #         if channel:
+    #             await channel.send("썬데이를 찾지 못했어요...")
+    #         else:
+    #             del sunday_channel[guild]
+    #             cur.execute(
+    #                 "DELETE FROM sunday_channel WHERE guild = %s", guild)
+    #             con.commit()
+    #         await asyncio.sleep(1800)
+    #         await self.sunday_maple_channel(guild, id)
+    #     res = requests.get(sunday_url)
+    #     soup = BeautifulSoup(res.text, 'html.parser')
+    #     src = soup.select_one(".new_board_con div div img")['src']
+    #     img = requests.get(src)
+    #     if img.status_code == 200:
+    #         image_binary = io.BytesIO(img.content)
+    #         image_file = discord.File(image_binary, filename="sunday.jpg")
+    #     guildChannel = self.get_channel(int(id))
+    #     if guildChannel:
+    #         await guildChannel.send(content=f"[이벤트 링크]({sunday_url})", file=image_file)
+    #     else:
+    #         del sunday_channel[guild]
+    #         cur.execute(
+    #             "DELETE FROM sunday_channel WHERE guild = %s", key)
+    #         con.commit()
 
     @tasks.loop(time=datetime.time(hour=10, minute=10, tzinfo=KST))
     async def sunday_maple_loop(self):
+        self.sunday_count = 0
         await self.sunday_maple()
 
     async def on_ready(self):
