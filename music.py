@@ -123,7 +123,7 @@ class MyClient(discord.Client):
         events = soup.select('dl dd p a')
         sunday_url = ""
         for event in events:
-            if event.getText().split(" ")[0] == "썬데이":
+            if "썬데이" in event.getText().split(" "):
                 sunday_url = url+"/"+event['href'].split("/")[-1]
                 break
         if not sunday_url:
