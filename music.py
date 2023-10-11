@@ -574,7 +574,9 @@ async def addGuildMate(interaction: Interaction, 길드원명: str, 정보: str)
         cur.execute("INSERT INTO info VALUES(%s,%s)", (길드원명, 정보))
         text = "추가"
     con.commit()
-    await interaction.response.send_message(f"성공적으로 {길드원명}님의 정보를 {text}헀습니다.")
+    embed = discord.Embed(title="길드원명",color=interaction.user.color)
+    embed.add_field(name=정보,value='\u200b',inline=False)
+    await interaction.response.send_message(f"성공적으로 {길드원명}님의 정보를 {text}했습니다.",embed=embed)
 
 
 @tree.command(guild=discord.Object(id=GUILD_ID), name="길드원검색", description="길드원 정보를 검색합니다.")
