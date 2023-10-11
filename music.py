@@ -566,16 +566,20 @@ async def addGuildMate(interaction: Interaction, 길드원명: str, 정보: str)
         return await interaction.response.send_message("권한이 없습니다.", ephemeral=True)
     cur = con.cursor()
     text = ""
-    cur.execute("SELECT name FROM info WHERE name = %s", 길드원명)
-    if cur.fetchone():
+    cur.execute("SELECT info,name FROM info WHERE name = %s", 길드원명)
+    embed = discord.Embed(title="길드원명",color=interaction.user.color)
+    data = cur.fetchone()
+    if data:
+        data[0]
         cur.execute("UPDATE info SET info = %s WHERE name = %s", (정보, 길드원명))
         text = '수정'
+        embed.add_field(name="변경전",value=data[0],inline=False)
+        embed.add_field(name="변경후",value=정보,inline=False)
     else:
         cur.execute("INSERT INTO info VALUES(%s,%s)", (길드원명, 정보))
         text = "추가"
+        embed.add_field(name=정보,value='\u200b',inline=False)
     con.commit()
-    embed = discord.Embed(title="길드원명",color=interaction.user.color)
-    embed.add_field(name=정보,value='\u200b',inline=False)
     await interaction.response.send_message(f"성공적으로 {길드원명}님의 정보를 {text}했습니다.",embed=embed)
 
 
