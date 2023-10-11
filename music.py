@@ -552,12 +552,15 @@ async def removeGuildMate(interaction: Interaction, 길드원명: str):
     if str(interaction.user.id) not in whitelist:
         return await interaction.response.send_message("권한이 없습니다.", ephemeral=True)
     cur = con.cursor()
-    cur.execute("SELECT * FROM info WHERE name = %s", 길드원명)
-    if not cur.fetchone():
+    cur.execute("SELECT info FROM info WHERE name = %s", 길드원명)
+    data = cur.fetchone()
+    if not data:
         return await interaction.response.send_message(f"{길드원명}님은 정보가 없습니다.")
     cur.execute("DELETE FROM info WHERE name = %s", 길드원명)
     con.commit()
-    await interaction.response.send_message(f"성공적으로 {길드원명}님의 정보를 삭제했습니다.")
+    embed=discord.Embed(title=길드원명,color=interaction.user.color)
+    embed.add_field(name=data[0],value='\u200b',inline=False)
+    await interaction.response.send_message(f"성공적으로 {길드원명}님의 정보를 삭제했습니다.",embed=embed)
 
 
 @tree.command(guild=discord.Object(id=GUILD_ID), name="길드원추가", description="길드원 정보를 추가합니다.")
@@ -590,7 +593,7 @@ async def searchGuildMate(interaction: Interaction, 길드원명: str):
     info = cur.fetchone()
     if not info:
         return await interaction.response.send_message(f"{길드원명}님의 정보가 존재하지 않거나 삭제 되었습니다.", ephemeral=True)
-    embed = discord.Embed(title=info[0])
+    embed = discord.Embed(title=info[0],color=interaction.user.color)
     embed.add_field(name=info[1], value="\u200b")
     await interaction.response.send_message(embed=embed)
 
