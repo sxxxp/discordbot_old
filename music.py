@@ -567,7 +567,7 @@ async def addGuildMate(interaction: Interaction, 길드원명: str, 정보: str)
     cur = con.cursor()
     text = ""
     cur.execute("SELECT info,name FROM info WHERE name = %s", 길드원명)
-    embed = discord.Embed(title="길드원명",color=interaction.user.color)
+    embed = discord.Embed(title=길드원명,color=interaction.user.color)
     data = cur.fetchone()
     if data:
         data[0]
