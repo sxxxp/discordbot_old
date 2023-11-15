@@ -667,7 +667,7 @@ async def search(interaction: Interaction, 닉네임: str):
     embed.add_field(name=f"유니온 : {union}", value="\u200b")
     embed.add_field(name=f"무릉은 준비중이에요...", value="\u200b")
     await interaction.edit_original_response(content="", embed=embed)
-@tree.command( name="메시지 삭제", description='메시지를 삭제합니다. (채팅관리 권한 필요)')
+@tree.command(name="메시지삭제", description='메시지를 삭제합니다. (채팅관리 권한 필요)')
 async def deleteMessage(interaction:Interaction,개수:int=50):
     if interaction.user.guild_permissions.manage_messages:
         await interaction.channel.purge(limit=개수)
