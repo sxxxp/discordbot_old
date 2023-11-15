@@ -235,7 +235,7 @@ async def search(interaction: Interaction, 닉네임: str):
         await interaction.edit_original_response(content='유저가 없어요.')
 
 
-@tree.command( name="메시지 삭제", description='메시지를 삭제합니다. (채팅관리 권한 필요)')
+@tree.command(name="메시지삭제", description='메시지를 삭제합니다. (채팅관리 권한 필요)')
 async def deleteMessage(interaction:Interaction,개수:int=50):
     if interaction.user.guild_permissions.manage_messages:
         await interaction.channel.purge(limit=개수)
